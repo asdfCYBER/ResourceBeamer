@@ -7,8 +7,8 @@
     <ProjectGuid>{7F082D25-B6D3-4444-AE2B-F567E850576F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ResourceTeleporter</RootNamespace>
-    <AssemblyName>ResourceTeleporter</AssemblyName>
+    <RootNamespace>ResourceBeamer</RootNamespace>
+    <AssemblyName>ResourceBeamer</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -45,7 +45,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ResourceTransceiver.cs" />
+    <Compile Include="ResourceBeamer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

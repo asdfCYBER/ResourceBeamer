@@ -12,7 +12,7 @@ using UnityEngine;
 using CommNet;
 using KSP.UI;
 
-namespace ResourceTeleporter
+namespace ResourceBeamer.Module // The main partmodule namespace
 {
     [KSPModule("Resource Transceiver")] //copied from interstellarfuelswitch: [KSPModule("#LOC_IFS_TextureSwitch_moduleName")], probably gets loaded from cfg
     public class ResourceTransceiver : PartModule
@@ -44,11 +44,12 @@ namespace ResourceTeleporter
         }
 
         /// <summary>Get the total cached resources on the vessel, or the total available cache if GetAvailableCache = true</summary>
+        /// <param name="GetAvailableCache">Return AvailableCache instead of Cache if true</param>
         public double GetVesselCache(Vessel vessel, int resource, bool GetAvailableCache = false)
         {
             Cache = 0;
             AvailableCache = 0;
-            if (vessel.loaded)
+            if (vessel.loaded) // Get the cache on a loaded vessel
             {
                 foreach (ResourceTransceiver transceiver in vessel.FindPartModulesImplementing<ResourceTransceiver>())
                 {
@@ -59,9 +60,9 @@ namespace ResourceTeleporter
                     }
                 }
             }
-            else
+            else // Get the cache on an unloaded vessel
             {
-                foreach (ProtoPartSnapshot ppart in vessel.protoVessel.protoPartSnapshots) // strongly derived from ESLDBeacons
+                foreach (ProtoPartSnapshot ppart in vessel.protoVessel.protoPartSnapshots)
                 {
                     foreach (ProtoPartModuleSnapshot pmod in ppart.modules.FindAll((ProtoPartModuleSnapshot p) => p.moduleName == "ResourceTransceiver"))
                     {
@@ -73,7 +74,7 @@ namespace ResourceTeleporter
                     }
                 }
             }
-            if (GetAvailableCache) return AvailableCache;
+            if (GetAvailableCache) return AvailableCache; // Return the available cache if the optional parameter was true, else return the cache
             else return Cache;
         }
 
