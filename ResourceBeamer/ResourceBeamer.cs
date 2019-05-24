@@ -12,9 +12,9 @@ using UnityEngine;
 using CommNet;
 using KSP.UI;
 
-namespace ResourceBeamer.Module // The main partmodule namespace
+namespace ResourceBeamer // The main partmodule namespace
 {
-    [KSPModule("Resource Transceiver")] //copied from interstellarfuelswitch: [KSPModule("#LOC_IFS_TextureSwitch_moduleName")], probably gets loaded from cfg
+    [KSPModule("Resource Transceiver")]
     public class ResourceTransceiver : PartModule
     {
         [KSPField(isPersistant = true)]
@@ -37,7 +37,7 @@ namespace ResourceBeamer.Module // The main partmodule namespace
         public double AvailableCache;
 
         /// <summary>Get resourceID from name</summary>
-        public int GetResourceID(string ResourceName)
+        public static int GetResourceID(string ResourceName) // While it could and should reside in ResourceHandler, this method is too useful here
         {
             PartResourceDefinition Resource = PartResourceLibrary.Instance.GetDefinition(ResourceName);
             return Resource.id;
@@ -80,14 +80,15 @@ namespace ResourceBeamer.Module // The main partmodule namespace
 
         public override void OnStart(StartState state)
         {
-            //GetSelectableVessels();
+            
+            /*GetSelectableVessels();
             if (SelectableVessels.Count >= 1)
             {
                 Debug.Log("[RT] First SelectableVessels element is " + SelectableVessels[0]);
-            }
+            }*/
         }
 
-        public override void OnUpdate()
+        public override void OnUpdate() // TODO: remove this nonsense and maybe replace it with something useful
         {
             if (SelectableVessels.Count >= 1)
             {
@@ -96,38 +97,35 @@ namespace ResourceBeamer.Module // The main partmodule namespace
             }
         }
 
+        // Todo: Make this usable from other places
         /// <summary>Get a list of vessels with an activated ResourceTransceiver module and nonzero MaxResourceCache</summary>
-        [KSPEvent(active = true, guiActive = true, name = "GetSelectableVessels", guiName = "Get Selectable Vessels")]
+        [KSPEvent(active = true, guiActive = true, name = "GetSelectableVessels", guiName = "Get Selectable Vessels")] // For debugging purposes
         public void GetSelectableVessels()
         {
             SelectableVessels.Clear();
-            foreach (Vessel vessel in FlightGlobals.VesselsUnloaded) // find unloaded vessels, strongly derived from ESLDBeacons
+            foreach (Vessel vessel in FlightGlobals.VesselsUnloaded) // find unloaded vessels
             {
                 Debug.Log("[RT] Checking if unloaded vessel " + vessel + " is selectable");
                 if (vessel == this.vessel) continue; // discard the calling vessel
                 if (vessel == FlightGlobals.ActiveVessel) continue; // discard other controlled vessels too
-                Debug.Log("[RT] Nope test passed");
-
-                //bool CanReceive = false;
-                //bool CanTransmit = false;
 
                 foreach (ProtoPartSnapshot ppart in vessel.protoVessel.protoPartSnapshots)
                 {
                     foreach (ProtoPartModuleSnapshot pmod in ppart.modules.FindAll((ProtoPartModuleSnapshot p) => p.moduleName == "ResourceTransceiver"))
                     {
-                        int _mode = int.Parse(pmod.moduleValues.GetValue("mode"));
+                        int _mode = int.Parse(pmod.moduleValues.GetValue("mode")); // if this throws an exception it's really all your fault
                         if (_mode == 0) continue;
-                        //else if (_mode == 1) CanReceive = true;
-                        //else if (_mode == 2) CanTransmit = true;
 
                         double _AvailableCache = GetVesselCache(vessel, GetResourceID(pmod.moduleValues.GetValue("ResourceName")), true);
-                        Debug.Log("[RT] " + vessel + " has " + _AvailableCache + " cache available");
+
+                        //Debug.Log("[RT] " + vessel + " has " + _AvailableCache + " cache available");
+
                         if (_AvailableCache > 0)
                         {
                             if (!SelectableVessels.Contains(vessel))
                             {
                                 SelectableVessels.Add(vessel);
-                                Debug.Log("[RT] Unloaded vessel " + vessel + " was added to SelectableVessels");
+                                Debug.Log("[RT] Unloaded vessel " + vessel + " was added to SelectableVessels (available cache: " + _AvailableCache + ")");
                             }
                         }
                     }
